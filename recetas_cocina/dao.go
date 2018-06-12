@@ -159,7 +159,7 @@ func listarRecetas() []receta {
 }
 
 func pruebasDAO() {
-    var receta_a_crear Receta = {1, "Nombre 1", "Descripcion 1", "Ingredientes 1", "Pasos 1"}
+    var receta_a_crear Receta = Receta{1, "Nombre 1", "Descripcion 1", "Ingredientes 1", "Pasos 1"}
     fmt.Printf("¿Existe en BD (1)?: %v", receta1.existeEnBD())
     fmt.Printf("CREAR RECETA 1")
     
@@ -169,21 +169,21 @@ func pruebasDAO() {
     fmt.Printf("¿Existe en BD (1)?: %v", receta1.existeEnBD())
     
     fmt.Printf("CONSULTAR RECETA 1")
-    var receta_a_consultar Receta = {1, "", "", "", ""}
+    var receta_a_consultar Receta = Receta{1, "", "", "", ""}
     receta_a_consultar.consultarEnBD()
     
     fmt.Printf("Receta 1: %v", receta_a_consultar)
     
     fmt.Printf("ACTUALIZAR RECETA 1")
-    var receta_a_modificar Receta = {1, "2", "2", "2", "2"}
+    var receta_a_modificar Receta = Receta{1, "2", "2", "2", "2"}
     receta_a_modificar.actualizarEnBD()
     
-    var receta_a_consultar_2 Receta = {1, "", "", "", ""}
+    var receta_a_consultar_2 Receta = Receta{1, "", "", "", ""}
     receta_a_consultar_2.consultarEnBD()
     fmt.Printf("Receta 1: %v", receta_a_consultar_2)
     
     fmt.Printf("ELIMINAR RECETA 1")
-    var receta_a_eliminar Receta = {1, "", "", "", ""}
+    var receta_a_eliminar Receta = Receta{1, "", "", "", ""}
     
     fmt.Printf("¿Existe en BD (1)?: %v", receta_a_eliminar.existeEnBD())
     receta_a_eliminar.eliminarEnBD()
