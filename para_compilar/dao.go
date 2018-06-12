@@ -206,13 +206,7 @@ func crearReceta(json string) {
 	if ( err != nil ) {
 		panic(err)
 	}
-	receta := Receta{
-		-1,
-		receta_json.nombre,
-		receta_json.descripcion,
-		receta_json.ingredientes,
-		receta_json.pasos
-	}
+	receta := Receta{-1,receta_json.nombre,receta_json.descripcion,receta_json.ingredientes,receta_json.pasos}
 	
 	receta.crearEnBD()
 }
@@ -251,9 +245,7 @@ func listarRecetasEnJson() []string {
 
 func modificarReceta(id_receta int, json string) bool {
 	
-	var json string
 	receta := Receta{id_receta,"","","",""}
-	
 	bool existe = receta.existeEnBD()
 	if existe {
 		var json_bytes []byte = []byte(json)
@@ -262,15 +254,7 @@ func modificarReceta(id_receta int, json string) bool {
 		if ( err != nil ) {
 			panic(err)
 		}
-		
-		receta := Receta{
-			id_receta,
-			receta_json.nombre,
-			receta_json.descripcion,
-			receta_json.ingredientes,
-			receta_json.pasos
-		}
-		
+		receta := Receta{id_receta,receta_json.nombre,receta_json.descripcion,receta_json.ingredientes,receta_json.pasos}
 		receta.actualizarEnBD()
 	}
 	return existe
