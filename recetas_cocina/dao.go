@@ -199,8 +199,8 @@ type RecetaJSON struct {
 	pasos        string
 }
 
-func crearReceta(json string) {
-	var json_bytes []byte = []byte(json)
+func crearReceta(cadena string) {
+	var json_bytes []byte = []byte(cadena)
 	var receta_json RecetaJSON
 	err := json.Unmarshal(json_bytes, &receta_json)
 	if err != nil {
@@ -212,7 +212,7 @@ func crearReceta(json string) {
 }
 
 func consultarReceta(id_receta int) string {
-	var json string
+	var cadena string
 	receta := Receta{id_receta, "", "", "", ""}
 
 	existe := receta.existeEnBD()
@@ -222,10 +222,12 @@ func consultarReceta(id_receta int) string {
 		if err != nil {
 			panic(err)
 		}
-		json = string(json_bytes[:])
+		cadena = string(json_bytes[:])
 	} else {
-		json = "NO SE ENCONTRO RECETA."
+		cadena = "NO SE ENCONTRO RECETA."
 	}
+
+	return cadena
 }
 
 func listarRecetasEnJson() []string {
@@ -236,19 +238,19 @@ func listarRecetasEnJson() []string {
 		if err != nil {
 			panic(err)
 		}
-		json = string(json_bytes[:])
+		cadena := string(json_bytes[:])
 		append(recetas_en_json, json)
 	}
 
 	return recetas_en_json
 }
 
-func modificarReceta(id_receta int, json string) bool {
+func modificarReceta(id_receta int, cadena string) bool {
 
 	receta := Receta{id_receta, "", "", "", ""}
 	existe := receta.existeEnBD()
 	if existe {
-		var json_bytes []byte = []byte(json)
+		var json_bytes []byte = []byte(cadena)
 		var receta_json RecetaJSON
 		err := json.Unmarshal(json_bytes, &receta_json)
 		if err != nil {
@@ -262,7 +264,6 @@ func modificarReceta(id_receta int, json string) bool {
 }
 
 func eliminarReceta(id_receta int) bool {
-	var json string
 	receta := Receta{id_receta, "", "", "", ""}
 
 	existe := receta.existeEnBD()
