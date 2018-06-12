@@ -206,6 +206,7 @@ func crearReceta(cadena string) {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("CADENA:%v\n", cadena)
 	receta := Receta{-1, receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos}
 	fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos)
 
@@ -257,6 +258,7 @@ func modificarReceta(id_receta int, cadena string) bool {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Printf("CADENA:%v\n", cadena)
 		receta := Receta{id_receta, receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos}
 		fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos)
 
