@@ -207,6 +207,7 @@ func crearReceta(cadena string) {
 		panic(err)
 	}
 	receta := Receta{-1, receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos}
+	fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos)
 
 	receta.crearEnBD()
 }
@@ -257,6 +258,8 @@ func modificarReceta(id_receta int, cadena string) bool {
 			panic(err)
 		}
 		receta := Receta{id_receta, receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos}
+		fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos)
+
 		receta.actualizarEnBD()
 	}
 	return existe
