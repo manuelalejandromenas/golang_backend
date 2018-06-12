@@ -117,17 +117,17 @@ func (r *Receta) eliminarEnBD() {
 	}
 }
 
-func listarRecetas() []receta {
+func listarRecetas() []Receta {
 	var base_datos *sql.DB = crearConexionBD()
 	var db sql.DB = *base_datos
 	defer db.Close()
 
-	rows, err := db.Query("SELECT name FROM users;", age)
+	rows, err := db.Query("SELECT name FROM users;")
 	if err != nil {
 		panic(err)
 	}
 
-	var recetas []receta
+	var recetas []Receta
 	defer rows.Close()
 
 	for rows.Next() {
@@ -139,7 +139,7 @@ func listarRecetas() []receta {
 			pasos        string
 		)
 		if err := rows.Scan(&id_receta, &nombre, &descripcion, &ingredientes, &pasos); err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 		var receta Receta
 		receta.IdReceta = id_receta
@@ -151,7 +151,7 @@ func listarRecetas() []receta {
 		recetas = append(recetas, receta)
 	}
 	if err := rows.Err(); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	return recetas
@@ -160,13 +160,13 @@ func listarRecetas() []receta {
 
 func pruebasDAO() {
 	var receta_a_crear Receta = Receta{1, "Nombre 1", "Descripcion 1", "Ingredientes 1", "Pasos 1"}
-	fmt.Printf("¿Existe en BD (1)?: %v", receta1.existeEnBD())
+	fmt.Printf("¿Existe en BD (1)?: %v", receta_a_crear.existeEnBD())
 	fmt.Printf("CREAR RECETA 1")
 
 	receta_a_crear.IdReceta = 3
 	receta_a_crear.crearEnBD()
 
-	fmt.Printf("¿Existe en BD (1)?: %v", receta1.existeEnBD())
+	fmt.Printf("¿Existe en BD (1)?: %v", receta_a_crear.existeEnBD())
 
 	fmt.Printf("CONSULTAR RECETA 1")
 	var receta_a_consultar Receta = Receta{1, "", "", "", ""}
