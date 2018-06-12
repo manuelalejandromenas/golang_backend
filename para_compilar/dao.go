@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	_ "github.com/lib/pq"
 )
@@ -191,11 +192,125 @@ func pruebasDAO() {
 
 }
 
+type RecetaJSON struct {
+	nombre string
+	descripcion string
+	ingredientes string
+	pasos string
+}
+
+func crearReceta(json string) {
+	var json_bytes []byte = []byte(json)
+	var receta_json RecetaJSON
+	err := json.Unmarshal(json_bytes, &receta_json)
+	if ( err != nil ) {
+		panic(err)
+	}
+	receta := Receta{
+		-1,
+		receta_json.nombre,
+		receta_json.descripcion,
+		receta_json.ingredientes,
+		receta_json.pasos
+	}
+	
+	receta.crearEnBD()
+}
+
+func consultarReceta(id_receta int) string {
+	var json string
+	receta := Receta{id_receta,"","","",""}
+	
+	bool existe = receta.existeEnBD()
+	if existe {
+		receta.consultarEnBD()
+		json_bytes, err := json.Marshall(receta)
+		if ( err != nil ) {
+			panic(err)
+		}
+		json = string(json_bytes[:])
+	} else {
+		json = "NO SE ENCONTRO RECETA."
+	}
+}
+
+func listarRecetasEnJson() []string {
+	var recetas []Receta = listarRecetas()
+	var recetas_en_json []string
+	for i, receta := range recetas {
+		json_bytes, err := json.Marshall(receta)
+		if ( err != nil ) {
+			panic(err)
+		}
+		json = string(json_bytes[:])
+		append(recetas_en_json, json)
+	}
+	
+	return recetas_en_json
+}
+
+func modificarReceta(id_receta int, json string) bool {
+	
+	var json string
+	receta := Receta{id_receta,"","","",""}
+	
+	bool existe = receta.existeEnBD()
+	if existe {
+		var json_bytes []byte = []byte(json)
+		var receta_json RecetaJSON
+		err := json.Unmarshal(json_bytes, &receta_json)
+		if ( err != nil ) {
+			panic(err)
+		}
+		
+		receta := Receta{
+			id_receta,
+			receta_json.nombre,
+			receta_json.descripcion,
+			receta_json.ingredientes,
+			receta_json.pasos
+		}
+		
+		receta.actualizarEnBD()
+	}
+	return existe
+	
+}
+
+func eliminarReceta(id_receta int) bool {
+	var json string
+	receta := Receta{id_receta,"","","",""}
+	
+	bool existe = receta.existeEnBD()
+	if existe {
+		receta.eliminarEnBD()
+	} 
+	return existe
+}
+
+func pruebasJSON() {
+	fmt.Printf("\nLISTADO\n")
+	var recetas []string = listarRecetasEnJson()
+	for i, v := range recetas {
+		fmt.Printf("%v\n", v)
+	}
+	fmt.Printf("\nCREAR\n")
+	crearReceta(`{"nombre":"PRUEBA 1","descripcion":"PRUEBA 1","ingredientes":"PRUEBA 1", "pasos":"PRUEBA 1"}`)
+	fmt.Printf("\nCONSULTAR\n")
+	fmt.Printf(consultarReceta(2))
+	fmt.Printf("\nMODIFICAR\n")
+	se_pudo_modificar := modificarReceta(3, `{"nombre":"PRUEBA 1","descripcion":"PRUEBA 1","ingredientes":"PRUEBA 1", "pasos":"PRUEBA 1"}`)
+	
+	fmt.Printf("\nLISTADO\n")
+	var recetas2 []string = listarRecetasEnJson()
+	for i, v := range recetas2 {
+		fmt.Printf("%v\n", v)
+	}
+	
+	
+	
+}
 func main() {
 	//pruebasDAO()
-	var recetas []Receta = listarRecetas()
-	for i, v := range recetas {
-		fmt.Printf("Receta %v, valor = '%v'\n", i, v)
-	}
-
+	pruebasJSON()
 }
