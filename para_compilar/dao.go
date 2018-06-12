@@ -218,7 +218,7 @@ func consultarReceta(id_receta int) string {
 	existe := receta.existeEnBD()
 	if existe {
 		receta.consultarEnBD()
-		json_bytes, err := json.Marshall(receta)
+		json_bytes, err := json.Marshal(receta)
 		if err != nil {
 			panic(err)
 		}
@@ -234,7 +234,7 @@ func listarRecetasEnJson() []string {
 	var recetas []Receta = listarRecetas()
 	var recetas_en_json []string
 	for i, receta := range recetas {
-		json_bytes, err := json.Marshall(receta)
+		json_bytes, err := json.Marshal(receta)
 		if err != nil {
 			panic(err)
 		}
