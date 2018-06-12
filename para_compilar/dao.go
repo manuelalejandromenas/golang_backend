@@ -233,7 +233,7 @@ func consultarReceta(id_receta int) string {
 func listarRecetasEnJson() []string {
 	var recetas []Receta = listarRecetas()
 	var recetas_en_json []string
-	for i, receta := range recetas {
+	for _, receta := range recetas {
 		json_bytes, err := json.Marshal(receta)
 		if err != nil {
 			panic(err)
@@ -276,7 +276,7 @@ func eliminarReceta(id_receta int) bool {
 func pruebasJSON() {
 	fmt.Printf("\nLISTADO\n")
 	var recetas []string = listarRecetasEnJson()
-	for i, v := range recetas {
+	for _, v := range recetas {
 		fmt.Printf("%v\n", v)
 	}
 	fmt.Printf("\nCREAR\n")
@@ -285,10 +285,10 @@ func pruebasJSON() {
 	fmt.Printf(consultarReceta(2))
 	fmt.Printf("\nMODIFICAR\n")
 	se_pudo_modificar := modificarReceta(3, `{"nombre":"PRUEBA 1","descripcion":"PRUEBA 1","ingredientes":"PRUEBA 1", "pasos":"PRUEBA 1"}`)
-
+	fmt.Printf("Se pudo modificar:%v", se_pudo_modificar)
 	fmt.Printf("\nLISTADO\n")
 	var recetas2 []string = listarRecetasEnJson()
-	for i, v := range recetas2 {
+	for _, v := range recetas2 {
 		fmt.Printf("%v\n", v)
 	}
 
