@@ -1,4 +1,4 @@
-package recetas_cocina
+package main
 
 import (
 	"database/sql"
