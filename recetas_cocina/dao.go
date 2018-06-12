@@ -72,7 +72,7 @@ func (r *Receta) crearEnBD() {
 	var db sql.DB = *base_datos
 	defer db.Close()
 
-	sqlStatement := `INSERT INTO receta(nombre, descripcion, ingredientes, pasos) VALUES($1, $2, $3, $4);`
+	sqlStatement := `INSERT INTO receta(nombre, descripcion, ingredientes, pasos) VALUES($1, $2, $3, $4) RETURNING id_receta;`
 
 	id := 0
 	err := db.QueryRow(sqlStatement, con_comillas(r.Nombre), con_comillas(r.Descripcion), con_comillas(r.Ingredientes), con_comillas(r.Pasos)).Scan(&id)
@@ -87,7 +87,7 @@ func (r *Receta) consultarEnBD() {
 	var db sql.DB = *base_datos
 	defer db.Close()
 
-	err := db.QueryRow(`SELECT nombre, descripcion, ingredientes, pasos FROM receta WHERE id_receta=$1 RETURNING nombre, descripcion, ingredientes, pasos;`, r.IdReceta).Scan(&r.Nombre, &r.Descripcion, &r.Ingredientes, &r.Pasos)
+	err := db.QueryRow(`SELECT nombre, descripcion, ingredientes, pasos FROM receta WHERE id_receta=$1;`, r.IdReceta).Scan(&r.Nombre, &r.Descripcion, &r.Ingredientes, &r.Pasos)
 	if err != nil {
 		panic(err)
 	}
