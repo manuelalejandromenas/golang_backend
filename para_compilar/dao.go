@@ -239,7 +239,7 @@ func listarRecetasEnJson() []string {
 			panic(err)
 		}
 		cadena := string(json_bytes[:])
-		append(recetas_en_json, json)
+		append(recetas_en_json, cadena)
 	}
 
 	return recetas_en_json
