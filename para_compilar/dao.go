@@ -208,8 +208,8 @@ func crearReceta(cadena string) {
 	}
 	fmt.Printf("CADENA:%v\n", cadena)
 	fmt.Printf("RECETA_JSON:%v\n", receta_json)
-	receta := Receta{-1, receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos}
-	fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos)
+	receta := Receta{-1, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
+	fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos)
 
 	receta.crearEnBD()
 }
@@ -261,8 +261,8 @@ func modificarReceta(id_receta int, cadena string) bool {
 		}
 		fmt.Printf("CADENA:%v\n", cadena)
 		fmt.Printf("RECETA_JSON:%v\n", receta_json)
-		receta := Receta{id_receta, receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos}
-		fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos)
+		receta := Receta{id_receta, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
+		fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos)
 
 		receta.actualizarEnBD()
 	}
