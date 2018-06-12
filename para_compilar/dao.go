@@ -207,6 +207,7 @@ func crearReceta(cadena string) {
 		panic(err)
 	}
 	fmt.Printf("CADENA:%v\n", cadena)
+	fmt.Printf("RECETA_JSON:%v\n", receta_json)
 	receta := Receta{-1, receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos}
 	fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos)
 
@@ -249,8 +250,8 @@ func listarRecetasEnJson() []string {
 
 func modificarReceta(id_receta int, cadena string) bool {
 
-	receta := Receta{id_receta, "", "", "", ""}
-	existe := receta.existeEnBD()
+	verificar_existencia := Receta{id_receta, "", "", "", ""}
+	existe := verificar_existencia.existeEnBD()
 	if existe {
 		var json_bytes []byte = []byte(cadena)
 		var receta_json RecetaJSON
@@ -259,6 +260,7 @@ func modificarReceta(id_receta int, cadena string) bool {
 			panic(err)
 		}
 		fmt.Printf("CADENA:%v\n", cadena)
+		fmt.Printf("RECETA_JSON:%v\n", receta_json)
 		receta := Receta{id_receta, receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos}
 		fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.nombre, receta_json.descripcion, receta_json.ingredientes, receta_json.pasos)
 
