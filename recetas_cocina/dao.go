@@ -39,8 +39,7 @@ func crearConexionBD() *sql.DB {
 		panic(err)
 	}
 
-	var base_datos *sql.DB = &db
-	return base_datos
+	return db
 }
 
 type Receta struct {
