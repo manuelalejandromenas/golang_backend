@@ -192,6 +192,10 @@ func pruebasDAO() {
 }
 
 func main() {
-	pruebasDAO()
+	//pruebasDAO()
+	var recetas []Receta = listarRecetas()
+	for i, v := range recetas {
+		fmt.Printf("Receta %v, valor = '%v'\n", i, v)
+	}
 
 }
