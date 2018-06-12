@@ -193,10 +193,10 @@ func pruebasDAO() {
 }
 
 type RecetaJSON struct {
-	nombre       string `json:"nombre"`
-	descripcion  string `json:"descripcion"`
-	ingredientes string `json:"ingredientes"`
-	pasos        string `json:"pasos"`
+	Nombre       string
+	Descripcion  string
+	Ingredientes string
+	Pasos        string
 }
 
 func crearReceta(cadena string) {
@@ -287,11 +287,11 @@ func pruebasJSON() {
 		fmt.Printf("%v\n", v)
 	}
 	fmt.Printf("\nCREAR\n")
-	crearReceta(`{"nombre":"PRUEBA 1","descripcion":"PRUEBA 1","ingredientes":"PRUEBA 1", "pasos":"PRUEBA 1"}`)
+	crearReceta(`{"Nombre":"PRUEBA 1","Descripcion":"PRUEBA 1","Ingredientes":"PRUEBA 1", "Pasos":"PRUEBA 1"}`)
 	fmt.Printf("\nCONSULTAR\n")
 	fmt.Printf(consultarReceta(2))
 	fmt.Printf("\nMODIFICAR\n")
-	se_pudo_modificar := modificarReceta(3, `{"nombre":"PRUEBA 1","descripcion":"PRUEBA 1","ingredientes":"PRUEBA 1", "pasos":"PRUEBA 1"}`)
+	se_pudo_modificar := modificarReceta(3, `{"Nombre":"PRUEBA 1","Descripcion":"PRUEBA 1","Ingredientes":"PRUEBA 1", "Pasos":"PRUEBA 1"}`)
 	fmt.Printf("Se pudo modificar:%v", se_pudo_modificar)
 	fmt.Printf("\nLISTADO\n")
 	var recetas2 []string = listarRecetasEnJson()
