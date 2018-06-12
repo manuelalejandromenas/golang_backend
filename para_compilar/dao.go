@@ -122,7 +122,7 @@ func listarRecetas() []Receta {
 	var db sql.DB = *base_datos
 	defer db.Close()
 
-	rows, err := db.Query("SELECT name FROM users;")
+	rows, err := db.Query("SELECT * FROM receta;")
 	if err != nil {
 		panic(err)
 	}
