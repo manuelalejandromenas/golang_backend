@@ -87,7 +87,7 @@ func (r *Receta) consultarEnBD() {
 	var db sql.DB = *base_datos
 	defer db.Close()
 
-	err := db.QueryRow(`SELECT nombre, descripcion, ingredientes, pasos FROM receta WHERE id_receta=$1;`, r.IdReceta).Scan(&r.Nombre, &r.Descripcion, &r.Ingredientes, &r.Pasos)
+	err := db.QueryRow(`SELECT nombre, descripcion, ingredientes, pasos FROM receta WHERE id_receta=$1 RETURNING nombre, descripcion, ingredientes, pasos;`, r.IdReceta).Scan(&r.Nombre, &r.Descripcion, &r.Ingredientes, &r.Pasos)
 	if err != nil {
 		panic(err)
 	}
