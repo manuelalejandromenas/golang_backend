@@ -193,10 +193,10 @@ func pruebasDAO() {
 }
 
 type RecetaJSON struct {
-	nombre       string
-	descripcion  string
-	ingredientes string
-	pasos        string
+	nombre       string `json:"nombre"`
+	descripcion  string `json:"descripcion"`
+	ingredientes string `json:"ingredientes"`
+	pasos        string `json:"pasos"`
 }
 
 func crearReceta(cadena string) {
