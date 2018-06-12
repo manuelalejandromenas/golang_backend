@@ -57,7 +57,7 @@ func (r *Receta) existeEnBD() bool {
 	defer db.Close()
 
 	var nombre string
-	err = db.QueryRow(`SELECT nombre FROM receta WHERE id_receta=$1`, r.IdReceta).Scan(&nombre)
+	err := db.QueryRow(`SELECT nombre FROM receta WHERE id_receta=$1`, r.IdReceta).Scan(&nombre)
 
 	existe := true
 	if err == sql.ErrNoRows {
@@ -75,7 +75,7 @@ func (r *Receta) crearEnBD() {
 	sqlStatement := `INSERT INTO receta(nombre, descripcion, ingredientes, pasos) VALUES $1, $2, $3, $4);`
 
 	id := 0
-	err = db.QueryRow(sqlStatement, con_comillas(r.Nombre), con_comillas(r.Descripcion), con_comillas(r.Ingredientes), con_comillas(r.Pasos)).Scan(&id)
+	err := db.QueryRow(sqlStatement, con_comillas(r.Nombre), con_comillas(r.Descripcion), con_comillas(r.Ingredientes), con_comillas(r.Pasos)).Scan(&id)
 	r.IdReceta = id
 	if err != nil {
 		panic(err)
@@ -87,7 +87,7 @@ func (r *Receta) consultarEnBD() {
 	var db sql.DB = *base_datos
 	defer db.Close()
 
-	err = db.QueryRow(`SELECT nombre, descripcion, ingredientes, pasos FROM receta WHERE id_receta=$1`, r.IdReceta).Scan(&r.Nombre, &r.Descripcion, &r.Ingredientes, &r.Pasos)
+	err := db.QueryRow(`SELECT nombre, descripcion, ingredientes, pasos FROM receta WHERE id_receta=$1`, r.IdReceta).Scan(&r.Nombre, &r.Descripcion, &r.Ingredientes, &r.Pasos)
 	if err != nil {
 		panic(err)
 	}
@@ -99,7 +99,7 @@ func (r *Receta) actualizarEnBD() {
 	defer db.Close()
 
 	sqlStatement := `UPDATE receta SET nombre = $2, descripcion = $3, ingredientes = $4, pasos = $5 WHERE id_receta = $1`
-	_, err = db.Exec(sqlStatement, r.IdReceta, con_comillas(r.Nombre), con_comillas(r.Descripcion), con_comillas(r.Ingredientes), con_comillas(r.Pasos))
+	_, err := db.Exec(sqlStatement, r.IdReceta, con_comillas(r.Nombre), con_comillas(r.Descripcion), con_comillas(r.Ingredientes), con_comillas(r.Pasos))
 	if err != nil {
 		panic(err)
 	}
@@ -111,7 +111,7 @@ func (r *Receta) eliminarEnBD() {
 	defer db.Close()
 
 	sqlStatement := `DELETE FROM receta WHERE id_receta = $1;`
-	_, err = db.Exec(sqlStatement, r.IdReceta)
+	_, err := db.Exec(sqlStatement, r.IdReceta)
 	if err != nil {
 		panic(err)
 	}
