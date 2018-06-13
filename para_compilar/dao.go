@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	_ "github.com/lib/pq"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 )
@@ -300,12 +300,11 @@ func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	receta := consultarReceta(id)
-	
+
 	if receta != nil {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "%v", receta)
-	}
-	else {
+	} else {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "{}")
 	}
@@ -315,17 +314,17 @@ func CrearRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&receta_json)
 	receta := Receta{-1, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
 	receta.crearEnBD()
-	
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "%v", receta)
 }
 func ModificarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	
+
 	var receta_json RecetaJSON
 	_ = json.NewDecoder(r.Body).Decode(&receta_json)
-	
+
 	verificar_existencia := Receta{id, "", "", "", ""}
 	existe := verificar_existencia.existeEnBD()
 	if existe {
@@ -334,11 +333,10 @@ func ModificarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 		}
 		receta := Receta{id, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
 		receta.actualizarEnBD()
-		
+
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "%v", receta)
-	}
-	else  {
+	} else {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "{}")
 	}
@@ -346,15 +344,14 @@ func ModificarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 func EliminarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	
+
 	receta := Receta{id, "", "", "", ""}
 	existe := receta.existeEnBD()
 	if existe {
 		receta.eliminarEnBD()
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "%v", receta)
-	}
-	else {
+	} else {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "{}")
 	}
