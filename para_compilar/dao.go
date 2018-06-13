@@ -238,7 +238,7 @@ func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				panic(err)
 			}
-			receta_json = string(json_bytes[:])
+			receta_json := string(json_bytes[:])
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprintf(w, "%v", receta_json)
 
