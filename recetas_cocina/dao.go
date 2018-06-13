@@ -1,5 +1,16 @@
 package main
 
+/*
+	Se utilizaron dos librerias externas:
+	gorilla/mux para el manejo de peticiones HTTP
+	lib/pq como driver basico para la conexion con la base de datos en postgres
+
+	De las librerias propias de go:
+	"database/sql" para SQL, "encoding/json" para los JSON en el HTTP,
+	"fmt" para impresion en flujos, "log" para control de errores, "net/http"
+	para peticiones http, "strconv" para conversiones de string
+*/
+
 import (
 	"database/sql"
 	"encoding/json"
@@ -11,6 +22,10 @@ import (
 	"strconv"
 )
 
+/*
+	Interfaz CRUD, la idea es que cada clase de la REST API implemente esta
+	interfaz, se crea pensando a futuro, ya que solo se maneja una clase (Recetas)
+*/
 type CRUD interface {
 	existeEnBD() bool
 	crearEnBD()
@@ -19,6 +34,9 @@ type CRUD interface {
 	eliminarEnBD()
 }
 
+/*
+	Datos de la conexion con la BD, no se usa encriptacion al tratarse de una prueba
+*/
 const (
 	host     = "localhost"
 	port     = 5432
@@ -27,10 +45,13 @@ const (
 	dbname   = "recetas_cocina"
 )
 
+/*	Funcion de nombre autoindicativo */
 func con_comillas(palabra string) string {
 	return fmt.Sprintf(`'%v'`, palabra)
 }
 
+/*  Funcion que crea una conexion con la base de datos, y la deja abierta, con
+el objetivo de ser usada posteriormente por otras funciones / metodos */
 func crearConexionBD() *sql.DB {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+"password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := sql.Open("postgres", psqlInfo)
@@ -48,6 +69,7 @@ func crearConexionBD() *sql.DB {
 	return base_datos
 }
 
+/*  "Clase" basica de recetas, forma parte del DAO de la REST API */
 type Receta struct {
 	IdReceta     int
 	Nombre       string
@@ -56,6 +78,7 @@ type Receta struct {
 	Pasos        string
 }
 
+/*  Metodo para verificar existencia, de la clase receta */
 func (r *Receta) existeEnBD() bool {
 	var base_datos *sql.DB = crearConexionBD()
 	var db sql.DB = *base_datos
@@ -72,6 +95,7 @@ func (r *Receta) existeEnBD() bool {
 	return existe
 }
 
+/*  Metodo para crear en la base de datos, leyendo los atributos  en receta */
 func (r *Receta) crearEnBD() {
 	var base_datos *sql.DB = crearConexionBD()
 	var db sql.DB = *base_datos
@@ -87,6 +111,7 @@ func (r *Receta) crearEnBD() {
 	}
 }
 
+/*  Metodo para consultar en la base de datos, leyendo los atributos  en receta */
 func (r *Receta) consultarEnBD() {
 	var base_datos *sql.DB = crearConexionBD()
 	var db sql.DB = *base_datos
@@ -98,6 +123,7 @@ func (r *Receta) consultarEnBD() {
 	}
 }
 
+/*  Metodo para actualizar en la base de datos, leyendo los atributos  en receta */
 func (r *Receta) actualizarEnBD() {
 	var base_datos *sql.DB = crearConexionBD()
 	var db sql.DB = *base_datos
@@ -110,6 +136,7 @@ func (r *Receta) actualizarEnBD() {
 	}
 }
 
+/*  Metodo para eliminar en la base de datos, leyendo los atributos  en receta */
 func (r *Receta) eliminarEnBD() {
 	var base_datos *sql.DB = crearConexionBD()
 	var db sql.DB = *base_datos
@@ -122,6 +149,9 @@ func (r *Receta) eliminarEnBD() {
 	}
 }
 
+/*  Funcion para listar todas las recetas en la base de datos, en otros lenguajes
+seria un metodo de clase, al no encontrarse la forma adecuada de hacerlo en go,
+se creo una funcion. */
 func listarRecetas() []Receta {
 	var base_datos *sql.DB = crearConexionBD()
 	var db sql.DB = *base_datos
@@ -163,6 +193,8 @@ func listarRecetas() []Receta {
 
 }
 
+/*  Pruebas del modelo DAO, solo funcionan si la base de datos esta recien creada
+    y no tiene informacion alguna */
 func pruebasDAO() {
 	var receta_a_crear Receta = Receta{1, "Nombre 1", "Descripcion 1", "Ingredientes 1", "Pasos 1"}
 	fmt.Printf("¿Existe en BD (1)?: %v", receta_a_crear.existeEnBD())
@@ -196,6 +228,8 @@ func pruebasDAO() {
 
 }
 
+/*  RecetaJSON, es la misma clase receta sin su estructura, se crea con motivos
+de facilitar implementacion */
 type RecetaJSON struct {
 	Nombre       string
 	Descripcion  string
@@ -203,14 +237,17 @@ type RecetaJSON struct {
 	Pasos        string
 }
 
-/* recetas EndPoint */
+/* Endpoint para listar recetas  (GET /recetas)
+   Tiene dos posibles salidas:
+   (StatusInternalServerError, listado_vacio) -> Error interno
+   (StatusOk, listado de recetas) -> Consulta exitosa
+*/
 func ListarRecetasEndpoint(w http.ResponseWriter, r *http.Request) {
-
 	var recetas []Receta = listarRecetas()
 
 	json_bytes, err := json.Marshal(recetas)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "{}")
 		panic(err)
 	} else {
@@ -220,6 +257,13 @@ func ListarRecetasEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/* Endpoint para ver una receta  (GET /recetas/{id})
+   Tiene cuatro posibles salidas:
+   (StatusInternalServerError, listado_vacio) -> Error interno
+   (StatusBadRequest, listado_vacio) -> Mala peticion
+   (StatusNotFound, listado_vacio) -> No se encontro la receta con esa id
+   (StatusOk, receta) -> JSON que representa la receta
+*/
 func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -236,11 +280,14 @@ func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 			receta.consultarEnBD()
 			json_bytes, err := json.Marshal(receta)
 			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, "{}")
 				panic(err)
+			} else {
+				receta_json := string(json_bytes[:])
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprintf(w, "%v", receta_json)
 			}
-			receta_json := string(json_bytes[:])
-			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, "%v", receta_json)
 
 		} else {
 			w.WriteHeader(http.StatusNotFound)
@@ -249,6 +296,11 @@ func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/* Endpoint para crear recetas (POST /recetas)
+   Tiene dos posibles salidas:
+   (StatusInternalServerError, listado_vacio) -> Error interno
+   (StatusOk, receta) -> Impresion de la receta creada (no JSON)
+*/
 func CrearRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	var receta_json RecetaJSON
 	err := json.NewDecoder(r.Body).Decode(&receta_json)
@@ -265,6 +317,13 @@ func CrearRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/* Endpoint para modificar recetas (POST /recetas/{id})
+   Tiene cuatro posibles salidas:
+   (StatusInternalServerError, listado_vacio) -> Error interno
+   (StatusBadRequest, listado_vacio) -> Mala peticion
+   (StatusNotFound, listado_vacio) -> No se encontro la receta con esa id
+   (StatusOk, receta) -> Impresion de la receta modificada (no JSON)
+*/
 func ModificarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -280,13 +339,15 @@ func ModificarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 		existe := verificar_existencia.existeEnBD()
 		if existe {
 			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, "{}")
 				panic(err)
+			} else {
+				receta := Receta{id, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
+				receta.actualizarEnBD()
+				w.WriteHeader(http.StatusOK)
+				fmt.Fprintf(w, "%v", receta)
 			}
-			receta := Receta{id, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
-			receta.actualizarEnBD()
-
-			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, "%v", receta)
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "{}")
@@ -294,6 +355,12 @@ func ModificarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/* Endpoint para eliminar recetas (DELETE /recetas/{id})
+   Tiene tres posibles salidas
+   (StatusBadRequest, listado_vacio) -> Mala peticion
+   (StatusNotFound, listado_vacio) -> No se encontro la receta con esa id
+   (StatusOk, receta) -> Impresion de la receta eliminada (no JSON)
+*/
 func EliminarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -305,6 +372,7 @@ func EliminarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 		receta := Receta{id, "", "", "", ""}
 		existe := receta.existeEnBD()
 		if existe {
+			receta.consultarEnBD()
 			receta.eliminarEnBD()
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprintf(w, "%v", receta)
@@ -315,6 +383,10 @@ func EliminarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/*
+	Funcion principal, aqui se asocian los endpoints a sus respectivas rutas
+	Muy importante uso de la libreria gorilla/mux
+*/
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/recetas", ListarRecetasEndpoint).Methods("GET")
