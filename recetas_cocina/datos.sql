@@ -1,5 +1,3 @@
-INSERT INTO receta(nombre, descripcion, ingredientes, pasos) VALUES('Receta 1', 'Descripcion 1', 'Ingredientes 1', 'Pasos 1');
-SELECT * FROM receta;
-UPDATE receta SET nombre = 'Nombre 2', descripcion = 'Descripcion 2', ingredientes = 'Ingredientes 2', pasos = 'Paso 2' WHERE id_receta = 1;
-DELETE FROM receta WHERE id_receta = 1;
+INSERT INTO receta(nombre, descripcion, ingredientes, pasos) VALUES('Arroz para Dummies', 'Arroz en olla arrocera', 'Sarten, arroz, agua, aceite, y sal al gusto', '1. Mezclar con una proporcion 1:2 para agua y arroz 2. Agregarle 1 cucharada de aceite por cada taza de arroz, y media cucharadita de sal por cada taza y media de arroz 3. Tapar la olla');
+INSERT INTO receta(nombre, descripcion, ingredientes, pasos) VALUES('Huevo frito para Dummies', 'Huevo a la colombiana en sarten', 'Huevo, aceite, sal y sarten', '1. Echar una cucharada de aceite por cada huevo a fritar en la sarten 2. Romper el huevo con cuidado y poner la yema en la misma 3. Sobre la yema añadir sal 4. Una vez la yema este amarilla y el cuerpo sea de un blanco condensado, apagar sarten.');
 
