@@ -289,5 +289,5 @@ func pruebasJSON() {
 }
 func main() {
 	//pruebasDAO()
-	//pruebasJSON()
+	pruebasJSON()
 }
