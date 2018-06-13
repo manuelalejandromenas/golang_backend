@@ -232,7 +232,6 @@ func consultarReceta(id_receta int) string {
 
 func listarRecetasEnJson() string {
 	var recetas []Receta = listarRecetas()
-	var recetas_en_json string
 
 	json_bytes, err := json.Marshal(recetas)
 	if err != nil {
