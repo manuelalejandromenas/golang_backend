@@ -241,13 +241,12 @@ func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 func CrearRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	var receta_json RecetaJSON
 	err := json.NewDecoder(r.Body).Decode(&receta_json)
-	
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "{}")
 		panic(err)
-	}
-	else {
+	} else {
 		receta := Receta{-1, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
 		receta.crearEnBD()
 		w.WriteHeader(http.StatusOK)
