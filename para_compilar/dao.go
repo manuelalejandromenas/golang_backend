@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/gorilla/mux"
+	"log"
+	"net/http"
 )
 
 type CRUD interface {
@@ -224,7 +227,7 @@ func consultarReceta(id_receta int) string {
 		}
 		cadena = string(json_bytes[:])
 	} else {
-		cadena = "NO SE ENCONTRO RECETA."
+		cadena = nil
 	}
 
 	return cadena
@@ -285,9 +288,84 @@ func pruebasJSON() {
 	fmt.Printf("Se pudo modificar:%v", se_pudo_modificar)
 	fmt.Printf("\nLISTADO\n")
 	fmt.Printf("%v", listarRecetasEnJson())
-
 }
+
+/* recetas EndPoint */
+func ListarRecetasEndpoint(w http.ResponseWriter, r *http.Request) {
+	recetas := listarRecetasEnJSON()
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "%v", recetaS)
+}
+func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	receta := consultarReceta(id)
+	
+	if receta != nil {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%v", receta)
+	}
+	else {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "{}")
+	}
+}
+func CrearRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
+	var receta_json RecetaJSON
+	_ = json.NewDecoder(r.Body).Decode(&receta_json)
+	receta := Receta{-1, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
+	receta.crearEnBD()
+	
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "%v", receta)
+}
+func ModificarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	
+	var receta_json RecetaJSON
+	_ = json.NewDecoder(r.Body).Decode(&receta_json)
+	
+	verificar_existencia := Receta{id, "", "", "", ""}
+	existe := verificar_existencia.existeEnBD()
+	if existe {
+		if err != nil {
+			panic(err)
+		}
+		receta := Receta{id, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
+		receta.actualizarEnBD()
+		
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%v", receta)
+	}
+	else  {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "{}")
+	}
+}
+func EliminarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	
+	receta := Receta{id, "", "", "", ""}
+	existe := receta.existeEnBD()
+	if existe {
+		receta.eliminarEnBD()
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%v", receta)
+	}
+	else {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "{}")
+	}
+}
+
 func main() {
-	//pruebasDAO()
-	pruebasJSON()
+	router := mux.NewRouter()
+	router.HandleFunc("/recetas", ListarRecetasEndpoint).Methods("GET")
+	router.HandleFunc("/recetas/{id}", VerRecetaEndpoint).Methods("GET")
+	router.HandleFunc("/recetas", CrearRecetaEndpoint).Methods("POST")
+	router.HandleFunc("/recetas/{id}", ModificarRecetaEndpoint).Methods("POST")
+	router.HandleFunc("/recetas/{id}", EliminarRecetaEndpoint).Methods("DELETE")
+	log.Fatal(http.ListenAndServe(":80", router))
 }

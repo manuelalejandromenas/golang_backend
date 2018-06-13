@@ -367,5 +367,5 @@ func main() {
 	router.HandleFunc("/recetas", CrearRecetaEndpoint).Methods("POST")
 	router.HandleFunc("/recetas/{id}", ModificarRecetaEndpoint).Methods("POST")
 	router.HandleFunc("/recetas/{id}", EliminarRecetaEndpoint).Methods("DELETE")
-	log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServe(":80", router))
 }
