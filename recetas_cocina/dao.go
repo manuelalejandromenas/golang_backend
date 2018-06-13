@@ -203,100 +203,23 @@ type RecetaJSON struct {
 	Pasos        string
 }
 
-func crearReceta(cadena string) {
-	var json_bytes []byte = []byte(cadena)
-	var receta_json RecetaJSON
-	err := json.Unmarshal(json_bytes, &receta_json)
-	if err != nil {
-		panic(err)
-	}
-	receta := Receta{-1, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
+/* recetas EndPoint */
+func ListarRecetasEndpoint(w http.ResponseWriter, r *http.Request) {
 
-	receta.crearEnBD()
-}
-
-func consultarReceta(id_receta int) string {
-	var cadena string
-	receta := Receta{id_receta, "", "", "", ""}
-
-	existe := receta.existeEnBD()
-	if existe {
-		receta.consultarEnBD()
-		json_bytes, err := json.Marshal(receta)
-		if err != nil {
-			panic(err)
-		}
-		cadena = string(json_bytes[:])
-	} else {
-		cadena = ""
-	}
-
-	return cadena
-}
-
-func listarRecetasEnJson() string {
 	var recetas []Receta = listarRecetas()
 
 	json_bytes, err := json.Marshal(recetas)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "{}")
 		panic(err)
+	} else {
+		listado_recetas := string(json_bytes[:])
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%v", listado_recetas)
 	}
-
-	cadena := string(json_bytes[:])
-
-	return cadena
 }
 
-func modificarReceta(id_receta int, cadena string) bool {
-
-	verificar_existencia := Receta{id_receta, "", "", "", ""}
-	existe := verificar_existencia.existeEnBD()
-	if existe {
-		var json_bytes []byte = []byte(cadena)
-		var receta_json RecetaJSON
-		err := json.Unmarshal(json_bytes, &receta_json)
-		if err != nil {
-			panic(err)
-		}
-		receta := Receta{id_receta, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
-
-		receta.actualizarEnBD()
-	}
-	return existe
-
-}
-
-func eliminarReceta(id_receta int) bool {
-	receta := Receta{id_receta, "", "", "", ""}
-
-	existe := receta.existeEnBD()
-	if existe {
-		receta.eliminarEnBD()
-	}
-	return existe
-}
-
-func pruebasJSON() {
-	fmt.Printf("\nLISTADO\n")
-	fmt.Printf("%v", listarRecetasEnJson())
-
-	fmt.Printf("\nCREAR\n")
-	crearReceta(`{"Nombre":"PRUEBA 1","Descripcion":"PRUEBA 1","Ingredientes":"PRUEBA 1", "Pasos":"PRUEBA 1"}`)
-	fmt.Printf("\nCONSULTAR\n")
-	fmt.Printf(consultarReceta(2))
-	fmt.Printf("\nMODIFICAR\n")
-	se_pudo_modificar := modificarReceta(3, `{"Nombre":"PRUEBA 1","Descripcion":"PRUEBA 1","Ingredientes":"PRUEBA 1", "Pasos":"PRUEBA 1"}`)
-	fmt.Printf("Se pudo modificar:%v", se_pudo_modificar)
-	fmt.Printf("\nLISTADO\n")
-	fmt.Printf("%v", listarRecetasEnJson())
-}
-
-/* recetas EndPoint */
-func ListarRecetasEndpoint(w http.ResponseWriter, r *http.Request) {
-	recetas := listarRecetasEnJson()
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%v", recetas)
-}
 func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -314,15 +237,24 @@ func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
 func CrearRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	var receta_json RecetaJSON
-	_ = json.NewDecoder(r.Body).Decode(&receta_json)
-	receta := Receta{-1, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
-	receta.crearEnBD()
-
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%v", receta)
+	err := json.NewDecoder(r.Body).Decode(&receta_json)
+	
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "{}")
+		panic(err)
+	}
+	else {
+		receta := Receta{-1, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
+		receta.crearEnBD()
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "%v", receta)
+	}
 }
+
 func ModificarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -351,6 +283,7 @@ func ModificarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
 func EliminarRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
