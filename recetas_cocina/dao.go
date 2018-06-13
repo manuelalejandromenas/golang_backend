@@ -206,10 +206,7 @@ func crearReceta(cadena string) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("CADENA:%v\n", cadena)
-	fmt.Printf("RECETA_JSON:%v\n", receta_json)
 	receta := Receta{-1, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
-	fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos)
 
 	receta.crearEnBD()
 }
@@ -233,19 +230,18 @@ func consultarReceta(id_receta int) string {
 	return cadena
 }
 
-func listarRecetasEnJson() []string {
+func listarRecetasEnJson() string {
 	var recetas []Receta = listarRecetas()
-	var recetas_en_json []string
-	for _, receta := range recetas {
-		json_bytes, err := json.Marshal(receta)
-		if err != nil {
-			panic(err)
-		}
-		cadena := string(json_bytes[:])
-		recetas_en_json = append(recetas_en_json, cadena)
+	var recetas_en_json string
+
+	json_bytes, err := json.Marshal(recetas)
+	if err != nil {
+		panic(err)
 	}
 
-	return recetas_en_json
+	cadena := string(json_bytes[:])
+
+	return cadena
 }
 
 func modificarReceta(id_receta int, cadena string) bool {
@@ -259,10 +255,7 @@ func modificarReceta(id_receta int, cadena string) bool {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("CADENA:%v\n", cadena)
-		fmt.Printf("RECETA_JSON:%v\n", receta_json)
 		receta := Receta{id_receta, receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos}
-		fmt.Printf("Nombre: %v, Descripcion: %v, Ingredientes: %v, Pasos: %v", receta_json.Nombre, receta_json.Descripcion, receta_json.Ingredientes, receta_json.Pasos)
 
 		receta.actualizarEnBD()
 	}
@@ -282,10 +275,8 @@ func eliminarReceta(id_receta int) bool {
 
 func pruebasJSON() {
 	fmt.Printf("\nLISTADO\n")
-	var recetas []string = listarRecetasEnJson()
-	for _, v := range recetas {
-		fmt.Printf("%v\n", v)
-	}
+	fmt.Printf("%v", listarRecetasEnJson())
+
 	fmt.Printf("\nCREAR\n")
 	crearReceta(`{"Nombre":"PRUEBA 1","Descripcion":"PRUEBA 1","Ingredientes":"PRUEBA 1", "Pasos":"PRUEBA 1"}`)
 	fmt.Printf("\nCONSULTAR\n")
@@ -294,13 +285,10 @@ func pruebasJSON() {
 	se_pudo_modificar := modificarReceta(3, `{"Nombre":"PRUEBA 1","Descripcion":"PRUEBA 1","Ingredientes":"PRUEBA 1", "Pasos":"PRUEBA 1"}`)
 	fmt.Printf("Se pudo modificar:%v", se_pudo_modificar)
 	fmt.Printf("\nLISTADO\n")
-	var recetas2 []string = listarRecetasEnJson()
-	for _, v := range recetas2 {
-		fmt.Printf("%v\n", v)
-	}
+	fmt.Printf("%v", listarRecetasEnJson())
 
 }
 func main() {
 	//pruebasDAO()
-	pruebasJSON()
+	//pruebasJSON()
 }
