@@ -223,14 +223,25 @@ func ListarRecetasEndpoint(w http.ResponseWriter, r *http.Request) {
 func VerRecetaEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "{}")
+
 	} else {
-		receta := consultarReceta(id)
-		if receta != "" {
+		receta := Receta{id, "", "", "", ""}
+		existe := receta.existeEnBD()
+
+		if existe {
+			receta.consultarEnBD()
+			json_bytes, err := json.Marshal(receta)
+			if err != nil {
+				panic(err)
+			}
+			receta_json = string(json_bytes[:])
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, "%v", receta)
+			fmt.Fprintf(w, "%v", receta_json)
+
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "{}")
