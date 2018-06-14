@@ -104,7 +104,7 @@ func (r *Receta) crearEnBD() {
 	sqlStatement := `INSERT INTO receta(nombre, descripcion, ingredientes, pasos) VALUES($1, $2, $3, $4) RETURNING id_receta;`
 
 	id := 0
-	err := db.QueryRow(sqlStatement, con_comillas(r.Nombre), con_comillas(r.Descripcion), con_comillas(r.Ingredientes), con_comillas(r.Pasos)).Scan(&id)
+	err := db.QueryRow(sqlStatement, r.Nombre, r.Descripcion, r.Ingredientes, r.Pasos).Scan(&id)
 	r.IdReceta = id
 	if err != nil {
 		panic(err)
